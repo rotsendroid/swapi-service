@@ -1,6 +1,4 @@
-def main():
-    print("Hello from swapi-service!")
-
-
 if __name__ == "__main__":
-    main()
+    import uvicorn
+
+    uvicorn.run("src.api.main:app", host="0.0.0.0", port=8000, reload=True)

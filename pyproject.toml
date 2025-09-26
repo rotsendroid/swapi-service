@@ -10,10 +10,14 @@ dependencies = [
     "asyncpg>=0.30.0",
     "dotenv>=0.9.9",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.117.1",
-    "mypy>=1.18.2",
-    "pre-commit>=4.3.0",
     "pydantic-settings>=2.11.0",
-    "pytest>=8.4.2",
-    "pytest-asyncio>=1.2.0",
     "sqlalchemy[asyncio]>=2.0.43",
 ]
+
+[project.optional-dependencies]
+  dev = [
+      "pytest>=8.4.2",
+      "pytest-asyncio>=1.2.0",
+      "mypy>=1.18.2",
+      "pre-commit>=4.3.0",
+  ]
