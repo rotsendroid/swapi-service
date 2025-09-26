@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.pool import NullPool, AsyncAdaptedQueuePool
+from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool
 
 from api.config.settings import get_settings
 
@@ -25,7 +25,7 @@ class DatabaseManager:
 
     def _create_engine(self):
         """Create async engine with production-ready configuration."""
-        if self.settings.environment == "testing":
+        if self.settings.environment in ("development", "testing"):
             # Use NullPool for testing to avoid connection issues
             return create_async_engine(
                 self.settings.postgres_url,
@@ -40,8 +40,8 @@ class DatabaseManager:
                 pool_size=10,
                 max_overflow=20,
                 pool_timeout=30,
-                pool_recycle=3600,  # Recycle connections after 1 hour
-                pool_pre_ping=True,  # Validate connections before use
+                pool_recycle=3600,
+                pool_pre_ping=True,
                 echo=False,  # Use unified logging instead
             )
 
