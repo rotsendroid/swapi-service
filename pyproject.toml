@@ -1,0 +1,19 @@
+[project]
+name = "swapi-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "aiohttp>=3.12.15",
+    "alembic>=1.16.5",
+    "asyncpg>=0.30.0",
+    "dotenv>=0.9.9",
+    "fastapi[standard-no-fastapi-cloud-cli]>=0.117.1",
+    "mypy>=1.18.2",
+    "pre-commit>=4.3.0",
+    "pydantic-settings>=2.11.0",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "sqlalchemy[asyncio]>=2.0.43",
+]
