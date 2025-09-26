@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     )
 
     environment: str = Field(default="development")
+    api_version: int = Field(default=1)
 
     postgres_host: str = Field(default="localhost")
     postgres_port: int = Field(default=5432)
@@ -17,7 +18,7 @@ class Settings(BaseSettings):
     postgres_password: str = Field(default="postgres")
     postgres_db: str = Field(default="swapidb")
 
-    swapi_status_url: str = Field(default="https://swapi.info/api")
+    swapi_base_url: str = Field(default="https://swapi.info/api")
 
     @property
     def postgres_url(self) -> str:

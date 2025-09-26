@@ -48,7 +48,7 @@ async def perform_health_check(db: AsyncSession) -> HealthCheckResponse:
     try:
         timeout = aiohttp.ClientTimeout(total=5.0)
         async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.get(settings.swapi_status_url) as resp:
+            async with session.get(settings.swapi_base_url) as resp:
                 if resp.status == 200:
                     swapi_status = ServiceStatus.OK
                 else:
