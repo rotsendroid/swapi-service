@@ -20,7 +20,6 @@ class BaseServiceException(Exception):
         self.error_code = error_code or self.__class__.__name__
 
 
-
 class NotFoundException(BaseServiceException):
     """Exception for resource not found errors."""
 
@@ -60,7 +59,7 @@ class DatabaseException(BaseServiceException):
         )
 
 
-class RequestValidationException(BaseServiceException):
+class InputValidationException(BaseServiceException):
     """Exception for Pydantic validation errors (overrides FastAPI's 422 response)."""
 
     def __init__(self, validation_error: ValidationError):

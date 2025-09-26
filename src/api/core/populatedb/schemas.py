@@ -8,7 +8,7 @@ class PopulateDBResponse(BaseModel):
     pass
 
 
-class SWAPIFilmInputSchema(BaseModel):
+class FilmInputSchema(BaseModel):
     title: str
     episode_id: int
     opening_crawl: str
@@ -25,7 +25,7 @@ class SWAPIFilmInputSchema(BaseModel):
     url: str
 
 
-class SWAPICharacterInputSchema(BaseModel):
+class CharacterInputSchema(BaseModel):
     name: str
     height: str
     mass: str
@@ -44,7 +44,7 @@ class SWAPICharacterInputSchema(BaseModel):
     url: str
 
 
-class SWAPIStarshipInputSchema(BaseModel):
+class StarshipInputSchema(BaseModel):
     name: str
     model: str
     manufacturer: str
