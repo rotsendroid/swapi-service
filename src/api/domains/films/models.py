@@ -1,11 +1,12 @@
 from datetime import date, datetime
 from typing import TYPE_CHECKING, List
 
-from sqlalchemy import Column, Date, ForeignKey, Integer, String, Table, Text
+from sqlalchemy import Date, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.domains.associations import (
     character_film_association,
+    film_starship_association,
 )
 from api.storage.postgres import Base
 
@@ -13,12 +14,6 @@ if TYPE_CHECKING:
     from api.domains.characters.models import Character
     from api.domains.starships.models import Starship
 
-film_starship_association = Table(
-    "film_starships",
-    Base.metadata,
-    Column("film_id", Integer, ForeignKey("films.id"), primary_key=True),
-    Column("starship_id", Integer, ForeignKey("starships.id"), primary_key=True),
-)
 
 
 class Film(Base):

@@ -9,9 +9,16 @@ from alembic import context
 from api.config.settings import get_settings
 from api.storage.postgres import Base
 
+# Import all models and associations for Alembic to detect them
+from api.domains.characters.models import Character  # noqa: F401
+from api.domains.films.models import Film  # noqa: F401
+from api.domains.starships.models import Starship  # noqa: F401
+from api.domains import associations  # noqa: F401
+
 settings = get_settings()
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
 sys.path.append(parent_dir)
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
