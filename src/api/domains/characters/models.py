@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class Character(Base):
     __tablename__ = "characters"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     height: Mapped[Optional[str]] = mapped_column(String(10))
     mass: Mapped[Optional[str]] = mapped_column(String(10))
@@ -32,10 +32,10 @@ class Character(Base):
     url: Mapped[str] = mapped_column(String(200), unique=True)
 
     # Relationships
-    films: Mapped[List["Film"]] = relationship(
+    films: Mapped[list["Film"]] = relationship(
         "Film", secondary=character_film_association, back_populates="characters"
     )
-    starships: Mapped[List["Starship"]] = relationship(
+    starships: Mapped[list["Starship"]] = relationship(
         "Starship", secondary=character_starship_association, back_populates="pilots"
     )
 

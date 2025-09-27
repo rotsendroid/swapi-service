@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from pydantic import BaseModel
 
@@ -15,11 +14,11 @@ class FilmInputSchema(BaseModel):
     director: str
     producer: str
     release_date: str
-    characters: List[str]
-    planets: List[str]
-    starships: List[str]
-    vehicles: List[str]
-    species: List[str]
+    characters: list[str]
+    planets: list[str]
+    starships: list[str]
+    vehicles: list[str]
+    species: list[str]
     created: datetime
     edited: datetime
     url: str
@@ -35,10 +34,10 @@ class CharacterInputSchema(BaseModel):
     birth_year: str
     gender: str
     homeworld: str
-    films: List[str]
-    species: List[str]
-    vehicles: List[str]
-    starships: List[str]
+    films: list[str]
+    species: list[str]
+    vehicles: list[str]
+    starships: list[str]
     created: datetime
     edited: datetime
     url: str
@@ -58,8 +57,8 @@ class StarshipInputSchema(BaseModel):
     hyperdrive_rating: str
     MGLT: str
     starship_class: str
-    pilots: List[str]
-    films: List[str]
+    pilots: list[str]
+    films: list[str]
     created: datetime
     edited: datetime
     url: str

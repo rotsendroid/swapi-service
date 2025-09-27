@@ -9,4 +9,4 @@ router = APIRouter()
 @router.post("/populatedb", response_model=PopulateDBResponse)
 async def populate_database_endpoint(service: PopulateDBService = Depends()):
     """Populate database with SWAPI data."""
-    return await service.populatedb()
+    return await service.populatedb_wrapper()
