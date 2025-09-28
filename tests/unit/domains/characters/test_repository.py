@@ -100,29 +100,42 @@ class TestCharacterRepository:
     @pytest.mark.asyncio
     async def test_get_by_name_success(self, mocker, repository, sample_character):
         """Test successful retrieval by name."""
+        characters = [sample_character]
+
+        mock_scalars = mocker.MagicMock()
+        mock_scalars.all.return_value = characters
+
         mock_result = mocker.MagicMock()
-        mock_result.scalar_one_or_none.return_value = sample_character
+        mock_result.scalars.return_value = mock_scalars
+
         repository.session.execute.return_value = mock_result
 
         result = await repository.get_by_name("Luke Skywalker")
 
-        assert result == sample_character
+        assert len(result) == 1
+        assert result[0] == sample_character
         repository.session.execute.assert_called_once()
 
-        # Verify the query includes name filter
+        # Verify the query includes name filter and pagination
         call_args = repository.session.execute.call_args[0][0]
-        assert "characters.name" in str(call_args).lower()
+        query_str = str(call_args).lower()
+        assert "ilike" in query_str or "like lower(" in query_str
+        assert "offset" in query_str or "limit" in query_str
 
     @pytest.mark.asyncio
     async def test_get_by_name_not_found(self, mocker, repository):
         """Test retrieval by name when character doesn't exist."""
+        mock_scalars = mocker.MagicMock()
+        mock_scalars.all.return_value = []
+
         mock_result = mocker.MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
+        mock_result.scalars.return_value = mock_scalars
+
         repository.session.execute.return_value = mock_result
 
         result = await repository.get_by_name("Non-existent Character")
 
-        assert result is None
+        assert result == []
 
     @pytest.mark.asyncio
     async def test_get_by_name_database_error(self, repository):
