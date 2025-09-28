@@ -5,8 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from api.core.base_repository import BaseRepository
 from api.core.exceptions import DatabaseException
-from api.core.repositories.base import BaseRepository
 from api.domains.films.models import Film
 
 
@@ -40,7 +40,6 @@ class FilmRepository(BaseRepository[Film]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise DatabaseException(f"Failed to retrieve films: {str(e)}") from e
-
 
     async def get_by_title(self, title: str) -> Optional[Film]:
         try:

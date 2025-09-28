@@ -5,8 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from api.core.base_repository import BaseRepository
 from api.core.exceptions import DatabaseException
-from api.core.repositories.base import BaseRepository
 from api.domains.starships.models import Starship
 
 
@@ -40,7 +40,6 @@ class StarshipRepository(BaseRepository[Starship]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise DatabaseException(f"Failed to retrieve starships: {str(e)}") from e
-
 
     async def get_by_name(self, name: str) -> Optional[Starship]:
         try:

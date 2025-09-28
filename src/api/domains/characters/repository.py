@@ -5,8 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from api.core.base_repository import BaseRepository
 from api.core.exceptions import DatabaseException
-from api.core.repositories.base import BaseRepository
 from api.domains.characters.models import Character
 
 
@@ -44,7 +44,6 @@ class CharacterRepository(BaseRepository[Character]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise DatabaseException(f"Failed to retrieve characters: {str(e)}") from e
-
 
     async def get_by_name(self, name: str) -> Optional[Character]:
         try:

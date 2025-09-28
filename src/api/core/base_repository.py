@@ -26,7 +26,6 @@ class BaseRepository(ABC, Generic[T]):
     async def get_all(self, skip: int = 0, limit: int = 100) -> list[T]:
         pass
 
-
     @abstractmethod
     async def update(self, obj: T) -> T:
         pass
