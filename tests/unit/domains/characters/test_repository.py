@@ -230,18 +230,6 @@ class TestCharacterRepository:
         assert "Failed to update character" in str(exc_info.value)
         repository.session.rollback.assert_called_once()
 
-    def test_extract_id_from_url(self, mocker, repository):
-        """Test URL ID extraction method."""
-        # Mock the utility function
-        mock_extract = mocker.patch(
-            "api.core.base_repository.extract_id_from_url", return_value=42
-        )
-
-        result = repository._extract_id_from_url("https://api.example.com/people/42/")
-
-        assert result == 42
-        mock_extract.assert_called_once_with("https://api.example.com/people/42/")
-
     @pytest.mark.asyncio
     async def test_queries_include_eager_loading(self, mocker, repository):
         """Test that queries include proper eager loading of relationships."""
@@ -266,5 +254,4 @@ class TestCharacterRepository:
         from api.core.base_repository import BaseRepository
 
         assert isinstance(repository, BaseRepository)
-        assert hasattr(repository, "_extract_id_from_url")
         assert hasattr(repository, "session")
