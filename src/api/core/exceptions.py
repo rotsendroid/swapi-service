@@ -204,6 +204,38 @@ class InternalServerException(BaseServiceException):
         }
 
 
+class BusinessValidationException(BaseServiceException):
+    """Custom exception for business logic validation errors."""
+
+    def __init__(self, message: str, field: str = "input"):
+        details = {"field": field, "validation_type": "business_logic"}
+        super().__init__(
+            message,
+            status_code=400,
+            details=details,
+            error_code="BUSINESS_VALIDATION_ERROR",
+        )
+
+    @classmethod
+    def response_example(cls) -> dict:
+        """Example response for OpenAPI documentation."""
+        instance = cls("Example business validation error", "name")
+        return {
+            "model": BaseErrorResponse,
+            "description": "Business validation error",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "Name cannot be empty",
+                        "details": "{'field': 'name', 'validation_type': 'business_logic'}",
+                        "status_code": instance.status_code,
+                        "error_code": instance.error_code,
+                    }
+                }
+            },
+        }
+
+
 class DatabaseException(InternalServerException):
     """Exception for database-related errors."""
 
