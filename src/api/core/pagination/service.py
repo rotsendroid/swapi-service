@@ -1,5 +1,6 @@
-from typing import TypeVar, Generic, Callable, Any
-from sqlalchemy import select, func
+from typing import Any, Callable, Generic, TypeVar
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .schemas import PaginatedResponse, PaginationMeta, PaginationParams
@@ -24,7 +25,7 @@ class PaginationService(Generic[T]):
         total = total_result.scalar() or 0
 
         # Use repository's get_all method with offset (skip) and limit
-        items = await repository_get_all(skip=params.offset, limit=params.limit)
+        items = await repository_get_all(skip=params.offset, limit=params.limit)  # type: ignore
 
         # Serialize items
         serialized_items = serializer(items)

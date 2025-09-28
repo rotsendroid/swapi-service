@@ -1,6 +1,11 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.core.exceptions import (
+    DatabaseException,
+    InputValidationException,
+    BusinessValidationException,
+)
 from api.core.pagination import PaginatedResponse, PaginationParams
 from api.domains.starships.schemas import StarshipSchema
 from api.domains.starships.service import StarshipService, get_starship_service
@@ -9,7 +14,15 @@ from api.storage.postgres import get_db_session
 router = APIRouter(prefix="/starships", tags=["starships"])
 
 
-@router.get("/", response_model=PaginatedResponse[StarshipSchema])
+@router.get(
+    "/",
+    response_model=PaginatedResponse[StarshipSchema],
+    responses={
+        400: BusinessValidationException.response_example(),
+        422: InputValidationException.response_example(),
+        500: DatabaseException.response_example(),
+    },
+)
 async def get_all_starships(
     offset: int = Query(default=0, ge=0, description="Number of items to skip"),
     limit: int = Query(

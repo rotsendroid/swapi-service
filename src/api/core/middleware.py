@@ -60,13 +60,10 @@ class ExceptionHandlerMiddleware(BaseHTTPMiddleware):
                 f"{e.__class__.__name__}: {e.message}",
                 extra={"error_code": e.error_code, "details": e.details},
             )
+            error_response = e.to_response_schema()
             return ORJSONResponse(
                 status_code=e.status_code,
-                content={
-                    "error": e.error_code,
-                    "message": e.message,
-                    "details": e.details,
-                },
+                content=error_response.model_dump(),
             )
         except Exception as e:
             logger.error(f"Unhandled exception: {str(e)}", exc_info=True)
