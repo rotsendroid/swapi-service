@@ -10,14 +10,19 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.config.settings import get_settings
-from api.core.exceptions import DatabaseException, ExternalServiceException, InputValidationException
+from api.core.base_repository import BaseRepository
+from api.core.exceptions import (
+    DatabaseException,
+    ExternalServiceException,
+    InputValidationException,
+    InternalServerException,
+)
 from api.core.populatedb.schemas import (
     CharacterInputSchema,
     FilmInputSchema,
     PopulateDBResponse,
     StarshipInputSchema,
 )
-from api.core.repositories.base import BaseRepository
 from api.domains.characters.models import Character
 from api.domains.characters.repository import CharacterRepository
 from api.domains.films.models import Film
@@ -51,16 +56,25 @@ class PopulateDBService:
                 self._parse_swapi_data("starships", StarshipInputSchema),
             )
 
-            # Single pass: create entities with associations
-            await self._populate_with_associations(films_data, people_data, starships_data)
+            # create entities with associations
+            await self._populate_with_associations(
+                films_data, people_data, starships_data
+            )
 
             return PopulateDBResponse()
-        except SQLAlchemyError as e:
+        except (
+            InputValidationException,
+            ExternalServiceException,
+            DatabaseException,
+        ) as e:
             await self.db.rollback()
-            raise DatabaseException(f"Database operation failed: {str(e)}")
+            raise e
         except Exception as e:
             await self.db.rollback()
-            raise
+            raise InternalServerException(
+                "An unexpected error occurred during database population",
+                details={"error": str(e)},
+            )
 
     async def _populate_with_associations(
         self,
@@ -75,7 +89,6 @@ class PopulateDBService:
         2. Repository create() methods commit immediately, which isn't efficient for bulk operations
         3. We handle the ID extraction manually and commit everything at once for better performance
         """
-        # Create entities using repository create methods (without committing)
         films = {}
         characters = {}
         starships = {}
@@ -163,7 +176,7 @@ class PopulateDBService:
             # Map field name if needed
             target_field = field_mappings.get(field_name, field_name)
 
-            # Skip if target field doesn't exist in model
+            # Skip if target field (input schema field) doesn't exist in model fields
             if target_field not in model_fields:
                 continue
 
