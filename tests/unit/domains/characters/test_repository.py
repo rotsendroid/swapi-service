@@ -49,51 +49,6 @@ class TestCharacterRepository:
     """Test cases for CharacterRepository."""
 
     @pytest.mark.asyncio
-    async def test_get_by_id_success(self, mocker, repository, sample_character):
-        """Test successful retrieval by ID."""
-        # Mock the query result
-        mock_result = mocker.MagicMock()
-        mock_result.scalar_one_or_none.return_value = sample_character
-        repository.session.execute.return_value = mock_result
-
-        result = await repository.get_by_id(1)
-
-        assert result == sample_character
-        assert result.name == "Luke Skywalker"
-
-        # Verify session.execute was called with proper query
-        repository.session.execute.assert_called_once()
-
-        # Verify the query structure (check if it includes the correct ID filter)
-        call_args = repository.session.execute.call_args[0][0]
-        assert str(call_args).lower().count("characters.id") >= 1
-
-    @pytest.mark.asyncio
-    async def test_get_by_id_not_found(self, mocker, repository):
-        """Test retrieval when character doesn't exist."""
-        mock_result = mocker.MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        repository.session.execute.return_value = mock_result
-
-        result = await repository.get_by_id(999)
-
-        assert result is None
-        repository.session.execute.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_get_by_id_database_error(self, repository):
-        """Test database error handling in get_by_id."""
-        repository.session.execute.side_effect = SQLAlchemyError(
-            "Database connection failed"
-        )
-
-        with pytest.raises(DatabaseException) as exc_info:
-            await repository.get_by_id(1)
-
-        assert "Failed to retrieve character by ID 1" in str(exc_info.value)
-        assert exc_info.value.__cause__.__class__ == SQLAlchemyError
-
-    @pytest.mark.asyncio
     async def test_get_all_success(self, mocker, repository, sample_character):
         """Test successful retrieval of all characters."""
         characters = [sample_character]
@@ -229,24 +184,6 @@ class TestCharacterRepository:
 
         assert "Failed to update character" in str(exc_info.value)
         repository.session.rollback.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_queries_include_eager_loading(self, mocker, repository):
-        """Test that queries include proper eager loading of relationships."""
-        mock_result = mocker.MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        repository.session.execute.return_value = mock_result
-
-        await repository.get_by_id(1)
-
-        # Verify the query includes selectinload for relationships
-        call_args = repository.session.execute.call_args[0][0]
-        query_str = str(call_args)
-
-        # Check that the query was constructed with the Character model
-        # The actual SQL won't show selectinload since SQLAlchemy optimizes it
-        # but we can verify that the query was built correctly
-        assert "characters" in query_str.lower()
 
     @pytest.mark.asyncio
     async def test_inheritance_from_base_repository(self, repository):

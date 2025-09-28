@@ -11,10 +11,6 @@ class BaseRepository(ABC, Generic[T]):
         self.session = session
 
     @abstractmethod
-    async def get_by_id(self, id: int) -> Optional[T]:
-        pass
-
-    @abstractmethod
     async def get_all(self, skip: int = 0, limit: int = 100) -> list[T]:
         pass
 

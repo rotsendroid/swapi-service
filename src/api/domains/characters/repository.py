@@ -14,21 +14,9 @@ class CharacterRepository(BaseRepository[Character]):
     def __init__(self, session: AsyncSession):
         super().__init__(session)
 
-    async def get_by_id(self, id: int) -> Optional[Character]:
-        try:
-            stmt = (
-                select(Character)
-                .options(
-                    selectinload(Character.films), selectinload(Character.starships)
-                )
-                .where(Character.id == id)
-            )
-            result = await self.session.execute(stmt)
-            return result.scalar_one_or_none()
-        except SQLAlchemyError as e:
-            raise DatabaseException(
-                f"Failed to retrieve character by ID {id}: {str(e)}"
-            ) from e
+    def get_count_query(self):
+        """Return base query for counting characters."""
+        return select(Character)
 
     async def get_all(self, skip: int = 0, limit: int = 100) -> list[Character]:
         try:
