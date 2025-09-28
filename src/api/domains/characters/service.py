@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,11 +12,8 @@ class CharacterService:
     def __init__(self, repository: CharacterRepository):
         self.repository = repository
 
-    async def get_character_by_name(self, name: str) -> Optional[Character]:
-        return await self.repository.get_by_name(name)
-
     async def get_all_characters(
-        self, session: AsyncSession, params: PaginationParams
+        self, session: AsyncSession, params: PaginationParams, name: str | None = None
     ) -> PaginatedResponse[CharacterSchema]:
         """Get paginated list of all characters with relationships loaded."""
         pagination_service = PaginationService[CharacterSchema](session)
@@ -29,12 +24,22 @@ class CharacterService:
                 for char in characters
             ]
 
-        return await pagination_service.paginate_with_repository(
-            repository_get_all=self.repository.get_all,
-            count_query_stmt=self.repository.get_count_query(),
-            params=params,
-            serializer=serialize_characters,
-        )
+        if name:
+            return await pagination_service.paginate_with_repository(
+                repository_get_all=lambda skip, limit: self.repository.get_by_name(
+                    name, skip, limit
+                ),
+                count_query_stmt=self.repository.get_count_query(name),
+                params=params,
+                serializer=serialize_characters,
+            )
+        else:
+            return await pagination_service.paginate_with_repository(
+                repository_get_all=self.repository.get_all,
+                count_query_stmt=self.repository.get_count_query(),
+                params=params,
+                serializer=serialize_characters,
+            )
 
 
 def get_character_service(
