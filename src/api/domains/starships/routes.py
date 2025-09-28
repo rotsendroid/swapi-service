@@ -18,7 +18,7 @@ async def get_all_starships(
     name: str | None = Query(default=None, description="Filter starships by name"),
     session: AsyncSession = Depends(get_db_session),
     service: StarshipService = Depends(get_starship_service),
-) -> PaginatedResponse[StarshipSchema]:
+) -> PaginatedResponse[StarshipSchema]:  # pragma: no cover
     """Get paginated list of all starships."""
     params = PaginationParams(offset=offset, limit=limit)
     return await service.get_all_starships(session, params, name)

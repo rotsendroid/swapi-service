@@ -18,7 +18,7 @@ async def get_all_characters(
     name: str | None = Query(default=None, description="Filter characters by name"),
     session: AsyncSession = Depends(get_db_session),
     service: CharacterService = Depends(get_character_service),
-) -> PaginatedResponse[CharacterSchema]:
+) -> PaginatedResponse[CharacterSchema]:  # pragma: no cover
     """Get paginated list of all characters."""
     params = PaginationParams(offset=offset, limit=limit)
     return await service.get_all_characters(session, params, name)

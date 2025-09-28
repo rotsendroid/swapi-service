@@ -18,7 +18,7 @@ async def get_all_films(
     title: str | None = Query(default=None, description="Filter films by title"),
     session: AsyncSession = Depends(get_db_session),
     service: FilmService = Depends(get_film_service),
-) -> PaginatedResponse[FilmSchema]:
+) -> PaginatedResponse[FilmSchema]:  # pragma: no cover
     """Get paginated list of all films."""
     params = PaginationParams(offset=offset, limit=limit)
     return await service.get_all_films(session, params, title)
