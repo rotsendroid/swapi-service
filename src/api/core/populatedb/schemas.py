@@ -2,8 +2,10 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from api.core.schemas import BaseSuccessfullResponse
 
-class PopulateDBResponse(BaseModel):
+
+class PopulateDBResponse(BaseSuccessfullResponse):
     pass
 
 
