@@ -14,6 +14,13 @@ class FilmRepository(BaseRepository[Film]):
     def __init__(self, session: AsyncSession):
         super().__init__(session)
 
+    def get_count_query(self, title: str | None = None):
+        """Return base query for counting films."""
+        stmt = select(Film)
+        if title:
+            stmt = stmt.where(Film.title.ilike(f"%{title}%"))
+        return stmt
+
     async def get_all(self, skip: int = 0, limit: int = 100) -> list[Film]:
         try:
             stmt = (
@@ -27,18 +34,22 @@ class FilmRepository(BaseRepository[Film]):
         except SQLAlchemyError as e:
             raise DatabaseException(f"Failed to retrieve films: {str(e)}") from e
 
-    async def get_by_title(self, title: str) -> Optional[Film]:
+    async def get_by_title(
+        self, title: str, skip: int = 0, limit: int = 100
+    ) -> list[Film]:
         try:
             stmt = (
                 select(Film)
                 .options(selectinload(Film.characters), selectinload(Film.starships))
-                .where(Film.title == title)
+                .where(Film.title.ilike(f"%{title}%"))
+                .offset(skip)
+                .limit(limit)
             )
             result = await self.session.execute(stmt)
-            return result.scalar_one_or_none()
+            return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise DatabaseException(
-                f"Failed to retrieve film by title '{title}': {str(e)}"
+                f"Failed to retrieve films by title '{title}': {str(e)}"
             ) from e
 
     async def get_by_url(self, url: str) -> Optional[Film]:
