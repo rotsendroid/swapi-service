@@ -36,6 +36,3 @@ class Film(Base):
     starships: Mapped[list["Starship"]] = relationship(
         "Starship", secondary=film_starship_association, back_populates="films"
     )
-
-    def __repr__(self):
-        return f"<Film(title='{self.title}', episode_id={self.episode_id})>"

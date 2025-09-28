@@ -38,6 +38,3 @@ class Character(Base):
     starships: Mapped[list["Starship"]] = relationship(
         "Starship", secondary=character_starship_association, back_populates="pilots"
     )
-
-    def __repr__(self):
-        return f"<Character(name='{self.name}')>"
