@@ -29,6 +29,7 @@ from api.domains.films.models import Film
 from api.domains.films.repository import FilmRepository
 from api.domains.starships.models import Starship
 from api.domains.starships.repository import StarshipRepository
+from api.utils.url_helpers import extract_id_from_url
 from api.storage.postgres import Base, get_db_session
 
 T = TypeVar("T", bound=BaseModel)
@@ -96,19 +97,19 @@ class PopulateDBService:
         # Create films - extract ID and add to session without commit
         for film_data in films_data:
             film_model = self._map_film_input_to_model(film_data)
-            film_model.id = self.film_repo._extract_id_from_url(film_model.url)
+            film_model.id = extract_id_from_url(film_model.url)
             films[film_data.url] = film_model
 
         # Create characters - extract ID and add to session without commit
         for char_data in people_data:
             char_model = self._map_character_input_to_model(char_data)
-            char_model.id = self.character_repo._extract_id_from_url(char_model.url)
+            char_model.id = extract_id_from_url(char_model.url)
             characters[char_data.url] = char_model
 
         # Create starships - extract ID and add to session without commit
         for ship_data in starships_data:
             ship_model = self._map_starship_input_to_model(ship_data)
-            ship_model.id = self.starship_repo._extract_id_from_url(ship_model.url)
+            ship_model.id = extract_id_from_url(ship_model.url)
             starships[ship_data.url] = ship_model
 
         # Add all entities to session

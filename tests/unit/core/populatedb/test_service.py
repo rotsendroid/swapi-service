@@ -29,10 +29,6 @@ def mock_repositories(mocker):
     film_repo = mocker.MagicMock()
     starship_repo = mocker.MagicMock()
 
-    char_repo._extract_id_from_url.return_value = 1
-    film_repo._extract_id_from_url.return_value = 1
-    starship_repo._extract_id_from_url.return_value = 1
-
     return char_repo, film_repo, starship_repo
 
 

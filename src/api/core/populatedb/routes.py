@@ -20,6 +20,8 @@ router = APIRouter()
         502: ExternalServiceException.response_example(),
     },
 )
-async def populate_database_endpoint(service: PopulateDBService = Depends()):
+async def populate_database_endpoint(
+    service: PopulateDBService = Depends(),
+):  # pragma: no cover
     """Populate database with SWAPI data."""
     return await service.populatedb_wrapper()

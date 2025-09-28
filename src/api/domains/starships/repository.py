@@ -14,19 +14,12 @@ class StarshipRepository(BaseRepository[Starship]):
     def __init__(self, session: AsyncSession):
         super().__init__(session)
 
-    async def get_by_id(self, id: int) -> Optional[Starship]:
-        try:
-            stmt = (
-                select(Starship)
-                .options(selectinload(Starship.pilots), selectinload(Starship.films))
-                .where(Starship.id == id)
-            )
-            result = await self.session.execute(stmt)
-            return result.scalar_one_or_none()
-        except SQLAlchemyError as e:
-            raise DatabaseException(
-                f"Failed to retrieve starship by ID {id}: {str(e)}"
-            ) from e
+    def get_count_query(self, name: str | None = None):
+        """Return base query for counting starships."""
+        stmt = select(Starship)
+        if name:
+            stmt = stmt.where(Starship.name.ilike(f"%{name}%"))
+        return stmt
 
     async def get_all(self, skip: int = 0, limit: int = 100) -> list[Starship]:
         try:
@@ -41,18 +34,22 @@ class StarshipRepository(BaseRepository[Starship]):
         except SQLAlchemyError as e:
             raise DatabaseException(f"Failed to retrieve starships: {str(e)}") from e
 
-    async def get_by_name(self, name: str) -> Optional[Starship]:
+    async def get_by_name(
+        self, name: str, skip: int = 0, limit: int = 100
+    ) -> list[Starship]:
         try:
             stmt = (
                 select(Starship)
                 .options(selectinload(Starship.pilots), selectinload(Starship.films))
-                .where(Starship.name == name)
+                .where(Starship.name.ilike(f"%{name}%"))
+                .offset(skip)
+                .limit(limit)
             )
             result = await self.session.execute(stmt)
-            return result.scalar_one_or_none()
+            return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise DatabaseException(
-                f"Failed to retrieve starship by name '{name}': {str(e)}"
+                f"Failed to retrieve starships by name '{name}': {str(e)}"
             ) from e
 
     async def get_by_url(self, url: str) -> Optional[Starship]:

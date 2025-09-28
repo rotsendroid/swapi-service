@@ -14,21 +14,12 @@ class CharacterRepository(BaseRepository[Character]):
     def __init__(self, session: AsyncSession):
         super().__init__(session)
 
-    async def get_by_id(self, id: int) -> Optional[Character]:
-        try:
-            stmt = (
-                select(Character)
-                .options(
-                    selectinload(Character.films), selectinload(Character.starships)
-                )
-                .where(Character.id == id)
-            )
-            result = await self.session.execute(stmt)
-            return result.scalar_one_or_none()
-        except SQLAlchemyError as e:
-            raise DatabaseException(
-                f"Failed to retrieve character by ID {id}: {str(e)}"
-            ) from e
+    def get_count_query(self, name: str | None = None):
+        """Return base query for counting characters."""
+        stmt = select(Character)
+        if name:
+            stmt = stmt.where(Character.name.ilike(f"%{name}%"))
+        return stmt
 
     async def get_all(self, skip: int = 0, limit: int = 100) -> list[Character]:
         try:
@@ -45,17 +36,21 @@ class CharacterRepository(BaseRepository[Character]):
         except SQLAlchemyError as e:
             raise DatabaseException(f"Failed to retrieve characters: {str(e)}") from e
 
-    async def get_by_name(self, name: str) -> Optional[Character]:
+    async def get_by_name(
+        self, name: str, skip: int = 0, limit: int = 100
+    ) -> list[Character]:
         try:
             stmt = (
                 select(Character)
                 .options(
                     selectinload(Character.films), selectinload(Character.starships)
                 )
-                .where(Character.name == name)
+                .where(Character.name.ilike(f"%{name}%"))
+                .offset(skip)
+                .limit(limit)
             )
             result = await self.session.execute(stmt)
-            return result.scalar_one_or_none()
+            return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise DatabaseException(
                 f"Failed to retrieve character by name '{name}': {str(e)}"
