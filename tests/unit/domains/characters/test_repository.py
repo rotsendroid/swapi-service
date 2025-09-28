@@ -162,6 +162,18 @@ class TestCharacterRepository:
         repository.session.execute.assert_called_once()
 
     @pytest.mark.asyncio
+    async def test_get_by_url_not_found(self, mocker, repository):
+        """Test retrieval by URL when character doesn't exist."""
+        mock_result = mocker.MagicMock()
+        mock_result.scalar_one_or_none.return_value = None
+        repository.session.execute.return_value = mock_result
+
+        result = await repository.get_by_url("https://api.example.com/people/999/")
+
+        assert result is None
+        repository.session.execute.assert_called_once()
+
+    @pytest.mark.asyncio
     async def test_get_by_url_database_error(self, repository):
         """Test database error handling in get_by_url."""
         test_url = "https://api.example.com/people/1/"
@@ -205,3 +217,21 @@ class TestCharacterRepository:
 
         assert isinstance(repository, BaseRepository)
         assert hasattr(repository, "session")
+
+    def test_get_count_query_without_name(self, repository):
+        """Test get_count_query without name filter."""
+        query = repository.get_count_query()
+
+        query_str = str(query).lower()
+        assert "select" in query_str
+        assert "character" in query_str
+        assert "ilike" not in query_str
+
+    def test_get_count_query_with_name(self, repository):
+        """Test get_count_query with name filter."""
+        query = repository.get_count_query(name="Luke")
+
+        query_str = str(query).lower()
+        assert "select" in query_str
+        assert "character" in query_str
+        assert "ilike" in query_str or "like lower(" in query_str
