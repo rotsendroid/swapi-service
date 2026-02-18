@@ -1,6 +1,28 @@
+## Table of Contents
 
-# Setup and Run Instructions for SWAPI Service
+- [Project Overview](#project-overview)
+- [Setup and Run Instructions](#setup-and-run-instructions-for-swapi-service)
+- [API Endpoints Description](#api-endpoints-description)
+- [Testing](#testing)
+- [API Structure](#api-structure)
+- [Architecture Overview](#architecture-overview)
+- [Test Structure](#test-structure)
+
+## Project Overview
+
+This project is a FastAPI-based service that interacts with the Star Wars API (SWAPI) and provides a local, queryable API. It demonstrates how to structure a FastAPI project for scalability (domain-driven design) and testability (comprehensive unit tests), serving as a reference for best practices in modern Python web development. The main functionalities include:
+
+| Functionality          | Description                                                              |
+| ---------------------- | ------------------------------------------------------------------------ |
+| SWAPI Data Import      | Fetches and stores Star Wars data (characters, films, starships) locally |
+| RESTful API Endpoints  | Exposes endpoints for querying characters, films, and starships          |
+| Health Check           | Provides service and database health status                              |
+| Pagination & Filtering | Supports pagination and filtering for efficient data access              |
+
+## Setup and Run Instructions for SWAPI Service
+
 From within the swapi-service directory
+
 ```bash
 docker compose up --build
 ```
@@ -12,6 +34,7 @@ Then access the API documentation at http://localhost:8000/docs
 The service provides the following endpoints:
 
 ### Default
+
 - `POST /populatedb` - Populate Database Endpoint
   - Fetches data from the Star Wars API (SWAPI) and populates the local database
   - Imports characters, films, and starships data
@@ -23,22 +46,25 @@ The service provides the following endpoints:
   - Returns HTTP 200 for healthy service
 
 ### Characters
+
 - `GET /characters/` - Get paginated list of all characters
   - **Pagination**: Use `offset` (default: 0) and `limit` (default: 10, max: 100) parameters
   - **Filter**: Use `name` parameter to filter characters by name
 
 ### Films
+
 - `GET /films/` - Get All Films
   - **Pagination**: Use `offset` (default: 0) and `limit` (default: 10, max: 100) parameters
   - **Filter**: Use `title` parameter to filter characters by title
 
 ### Starships
+
 - `GET /starships/` - Get All Starships
   - **Pagination**: Use `offset` (default: 0) and `limit` (default: 10, max: 100) parameters
   - **Filter**: Use `name` parameter to filter characters by name
 
-
 ## Testing
+
 Execute the tests using the following command from within the `swapi-service` directory:
 
 ```bash
